@@ -7,5 +7,14 @@
 		"price": 20,
 		"status": true,
 		"stock": 100
+	},
+	{
+		"id": 2,
+		"title": "bananas",
+		"description": "Alimentos",
+		"category": "frutas",
+		"price": 20,
+		"status": true,
+		"stock": 100
 	}
 ]

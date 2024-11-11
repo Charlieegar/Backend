@@ -49,7 +49,7 @@ export default class productsManager {
                 throw new ErrorManager("Faltan datos obligatorios", 400)
             }
             const product = {
-                id: generateId(await this,this.getAll()),
+                id: generateId(await this.getAll()),
                 title,
                 description,
                 category,

@@ -1,0 +1,11 @@
+[
+	{
+		"id": 1,
+		"title": "manzanas",
+		"description": "Alimentos",
+		"category": "frutas",
+		"price": 20,
+		"status": true,
+		"stock": 100
+	}
+]

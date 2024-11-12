@@ -23,14 +23,17 @@ export default class cartsManager {
         return cartFound;
     }
 
-    async getAll () {
+    async getAll() {
         try {
-            this.#carts = await readJsonFile(paths.files, this.#jsonFileName)
-            return this.#carts
-        }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            this.#carts = await readJsonFile(paths.files, this.#jsonFileName);
+            console.log("Carts leídos:", this.#carts);
+            return this.#carts;
+        } catch (error) {
+            throw new ErrorManager(error.message, error.code);
         }
     }
+
+
 
     async getOneById (id) {
         try {
@@ -41,23 +44,26 @@ export default class cartsManager {
         }
     }
 
-    async insertOne (data) {
+    async insertOne(data) {
         try {
-            const products = data ?.products?.map(((item) => {
-                return { product: Number(item.products), quantity: 1}
-            }));
+            const products = data?.products?.map((item) => {
+                return { product: Number(item.product), quantity: 1 };
+            });
 
             const cart = {
-                id: generateId(await this,this.getAll()),
+                id: generateId(await this.getAll()),
                 products: products || [],
-            }
+            };
+
             this.#carts.push(cart);
-            await writeJsonFile(paths.files, this.#jsonFileName, this.#carts)
+            console.log("Carrito insertado:", cart);
+            await writeJsonFile(paths.files, this.#jsonFileName, this.#carts);
             return cart;
-        }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+        } catch (error) {
+            throw new ErrorManager(error.message, error.code);
         }
     }
+
 
     addOneProduct = async (id, productId) => {
         try {

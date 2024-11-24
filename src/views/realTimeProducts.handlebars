@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="/api/public/css/realTimeProducts.css">
+<header>
+    <h1>Productos en tiempo real:</h1>
+</header>
+
+<main>
+    <section>
+        <div id="products-list"></div>
+    </section>
+
+    <section>
+        <h3>Formulario de Productos</h3>
+        <form id="products-form">
+            <input type="text" name="title" placeholder="Ingrese nombre del producto ">
+            <div>Esta Activo? <input type="checkbox" name="status"></div>
+            <input type="number" name="stock" placeholder="Ingresa el stock">
+
+            <input type="submit" value="Guardar">
+        </form>
+    </section>
+
+    <section>
+        <h3>Eliminar Producto</h3>
+        <div>
+            <input type="number" id="input-product-id">
+            <button id="btn-delete-product">Eliminar</button>
+        </div>
+    </section>
+
+    <p id="error-message" style="color: brown;"></p>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/api/public/js/products.socket.js"></script>

@@ -8,7 +8,8 @@ const paths = {
     src: SRC_PATH,
     public: path.join(SRC_PATH, "public"),
     images: path.join(SRC_PATH, "public", "images"),
-    files: path.join(SRC_PATH, "files")
+    files: path.join(SRC_PATH, "files"),
+    views: path.join(SRC_PATH, "views"),
 
 }
 

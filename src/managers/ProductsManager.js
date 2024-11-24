@@ -45,7 +45,7 @@ export default class productsManager {
     async insertOne (data) {
         try {
             const { title, status, stock, description, category, price} = data;
-            if (!title || !status ||!stock || !description || !category || !price) {
+            if (!title || !status ||!stock ) {
                 throw new ErrorManager("Faltan datos obligatorios", 400)
             }
             const product = {
@@ -54,8 +54,8 @@ export default class productsManager {
                 description,
                 category,
                 price,
-                status,
-                stock
+                status: convertirABooleano(status),
+                stock: Number(stock),
 
             }
             this.#products.push(product);

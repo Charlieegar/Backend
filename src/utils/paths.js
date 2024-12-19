@@ -1,4 +1,4 @@
-import path, { join } from "path";
+import path from "path";
 
 const ROOT_PATH = path.resolve();
 const SRC_PATH = path.join(ROOT_PATH, "src");

@@ -1,22 +1,22 @@
-import { generateId } from "../utils/collectionHandler.js";
-import { convertirABooleano } from "../utils/converter.js";
-import { readJsonFile, writeJsonFile } from "../utils/fileHandler.js";
-import paths from "../utils/paths.js";
+import { isValidID } from "../config/mongoose.config.js";
+import ProductModel from "../models/product.model.js"
 import ErrorManager from "./ErrorManager.js";
+import { convertirABooleano } from "../utils/converter.js"
 
 
 export default class productsManager {
-    #jsonFileName;
-    #products;
+    #ProductModel;
 
     constructor() {
-        this.#jsonFileName = "products.json"
+        this.#ProductModel = ProductModel;
 
     }
 
     async $findOneById(id) {
-        this.#products = await this.getAll();
-        const productFound = this.#products.find((item) => item.id === Number(id))
+        if (!isValidID(id)) {
+            throw new ErrorManager ("Id invalido", 400)
+        }
+        const productFound = await this.#ProductModel.findById(id);
 
         if (!productFound) {
             throw new ErrorManager ("Id no encontrado", 404)
@@ -24,12 +24,27 @@ export default class productsManager {
         return productFound;
     }
 
-    async getAll () {
+    async getAll (params) {
         try {
-            this.#products = await readJsonFile(paths.files, this.#jsonFileName)
-            return this.#products
+            const $and = [];
+            if (params?.title) $and.push({ title: { $regex: params.title, $options: "i" } });
+
+            const filters = $and.length > 0 ? {$and} : {};
+            const sort = {
+                asc: {price: 1},
+                desc: {price: -1},
+            };
+            const paginationOptions = {
+                limit: params?.limit || 10,
+                page: params?.page || 1,
+                sort: sort[params?.sort] ?? {},
+                lean: true,
+            };
+
+            return await this.#ProductModel.paginate(filters, paginationOptions);
         }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            throw ErrorManager.handleError(error);
+
         }
     }
 
@@ -38,68 +53,46 @@ export default class productsManager {
             const productFound = await this.$findOneById(id);
             return productFound;
         }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            throw ErrorManager.handleError(error);
+
         }
     }
 
     async insertOne (data) {
         try {
-            const { title, status, stock, description, category, price} = data;
-            if (!title || !status ||!stock ) {
-                throw new ErrorManager("Faltan datos obligatorios", 400)
-            }
-            const product = {
-                id: generateId(await this.getAll()),
-                title,
-                description,
-                category,
-                price,
-                status: convertirABooleano(status),
-                stock: Number(stock),
-
-            }
-            this.#products.push(product);
-            await writeJsonFile(paths.files, this.#jsonFileName, this.#products)
+            const product = await this.#ProductModel.create({
+                ...data,
+                status: convertirABooleano(data.status),
+            });
             return product;
+
         }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            throw ErrorManager.handleError(error);
+
         }
     }
 
     async actualizarOneById (id, data) {
         try {
-            const { title, status, stock, description, category, price} = data;
             const productFound = await this.$findOneById(id);
+            const newValues = {...productFound, ...data, status: data.status ? convertirABooleano(data.status) : productFound.status,};
+            productFound.set(newValues);
+            productFound.save();
 
-            const product = {
-                id: productFound.id,
-                title: title ? title : productFound.title,
-                description: description ? description : productFound.description,
-                category: category ? category : productFound.category,
-                price: price ? Number(price) : productFound.price,
-                status: status ? convertirABooleano(status) : productFound.status,
-                stock: stock ? Number(stock) : productFound.stock
-            }
-            const index = this.#products.findIndex((item) => item.id === Number(id))
-            this.#products[index] = product;
-            await writeJsonFile(paths.files, this.#jsonFileName, this.#products)
-
-            return product;
+            return productFound;
         }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            throw ErrorManager.handleError(error);
+
         }
     }
 
     async deleteOneById (id) {
         try {
-            await this.$findOneById(id);
-
-            const index = this.#products.findIndex((item) => item.id === Number(id))
-            this.#products.splice(index, 1);
-            await writeJsonFile(paths.files, this.#jsonFileName, this.#products)
+            const productFound = await this.$findOneById(id);
+            await productFound.deleteOne();
 
         }catch (error) {
-            throw new ErrorManager(error.message, error.code)
+            throw ErrorManager.handleError(error);
         }
     }
 

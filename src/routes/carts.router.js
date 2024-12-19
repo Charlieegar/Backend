@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
 });
 
 
-router.post("/:cid/products/:pid", async (req, res) => {
+router.post("/:cid/products/:pid", async (req, res) => {//diferente al del profe
     try {
         const { cid, pid } = req.params;
         const { quantity } = req.body;

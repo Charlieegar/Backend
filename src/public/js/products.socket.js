@@ -1,5 +1,3 @@
-
-
 const socket = io();
 
 const productsList = document.getElementById("products-list");
@@ -9,9 +7,8 @@ const btnDeleteProduct = document.getElementById("btn-delete-product");
 const errorMessage = document.getElementById("error-message");
 
 
-
 socket.on("products-list", (data) => {
-    const products = data.products || [];
+    const products = data.products.docs ?? [];
 
     productsList.innerText = "";
 
